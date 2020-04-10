@@ -20,7 +20,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 """
 
 import telnetlib
-import urllib
+import urllib.request, urllib.parse, urllib.error
 from pylms.player import Player
 
 
@@ -85,8 +85,10 @@ class Server(object):
         # self.logger.debug("Telnet: %s" % (command_string))
         self.telnet.write(self.__encode(command_string + "\n"))
         response = self.telnet.read_until(self.__encode("\n"))[:-1]
+        response = self.__decode(response)
+
         if not preserve_encoding:
-            response = self.__decode(self.__unquote(response))
+            response = self.__unquote(response)
         else:
             command_string_quoted = \
                 command_string[0:command_string.find(':')] + \
@@ -114,7 +116,6 @@ class Server(object):
         quotedColon = self.__quote(':')
         try:
             #init
-            quotedColon = urllib.quote(':')
             #request command string
             resultStr = ' '+self.request(command_string, True)
             #get number of results
@@ -145,7 +146,7 @@ class Server(object):
                         #save item
                         key, value = subResult.split(quotedColon, 1)
                         if not preserve_encoding:
-                            item[urllib.unquote(key)] = self.__unquote(value)
+                            item[urllib.parse.unquote(key)] = self.__unquote(value)
                         else:
                             item[key] = value
                     output.append(item)
@@ -169,8 +170,8 @@ class Server(object):
         """
         Get Player
         """
-        if isinstance(ref, str):
-            ref = self.__decode(ref)
+        if not isinstance(ref, str):
+             ref = self.__decode(ref)
         ref = ref.lower()
         if ref:
             for player in self.players:
@@ -246,13 +247,13 @@ class Server(object):
             import urllib.parse
             return urllib.parse.quote(text, encoding=self.charset)
         except ImportError:
-            import urllib
-            return urllib.quote(text)
+            import urllib.request, urllib.parse, urllib.error
+            return urllib.parse.quote(text)
 
     def __unquote(self, text):
         try:
             import urllib.parse
             return urllib.parse.unquote(text, encoding=self.charset)
         except ImportError:
-            import urllib
-            return urllib.unquote(text)
+            import urllib.request, urllib.parse, urllib.error
+            return urllib.parse.unquote(text)
