@@ -67,7 +67,7 @@ class Player(object):
         self.update(index, update=update)
 
     def __repr__(self):
-        return "Player: %s" % (self.ref)
+        return "Player: %s" % self.ref
 
     def request(self, command_string, preserve_encoding=False):
         """Executes Telnet Request via Server"""
@@ -102,7 +102,7 @@ class Player(object):
                 self.server.request("player connected %i ?" % index)
             ))
 
-    ## getters/setters
+    # getters/setters
 
     def get_ref(self):
         """Get Player Ref"""
@@ -118,7 +118,7 @@ class Player(object):
 
     def set_name(self, name):
         """Set Player Name"""
-        self.request("name %s" % (name))
+        self.request("name %s" % name)
         self.update(self.index)
 
     def get_ip_address(self):
@@ -141,8 +141,8 @@ class Player(object):
     def has_permission(self, request_terms):
         """Check Player User Permissions"""
         request_terms = self.__quote(request_terms)
-        granted = int(self.request("can %s ?" % (request_terms)))
-        return (granted == 1)
+        granted = int(self.request("can %s ?" % request_terms))
+        return granted == 1
 
     def get_pref_value(self, name, namespace=None):
         """Get Player Preference Value"""
@@ -150,7 +150,7 @@ class Player(object):
         if namespace:
             pref_string += namespace + ":"
         pref_string += name
-        value = self.request("playerpref %s ?" % (pref_string))
+        value = self.request("playerpref %s ?" % pref_string)
         return value
 
     def set_pref_value(self, name, value, namespace=None):
@@ -298,22 +298,22 @@ class Player(object):
     def playlist_play(self, item):
         """Play Item Immediately"""
         item = self.__quote(item)
-        self.request("playlist play %s" % (item))
+        self.request("playlist play %s" % item)
 
     def playlist_add(self, item):
         """Add Item To Playlist"""
         item = self.__quote(item)
-        self.request("playlist add %s" % (item))
+        self.request("playlist add %s" % item)
 
     def playlist_insert(self, item):
         """Insert Item Into Playlist (After Current Track)"""
         item = self.__quote(item)
-        self.request("playlist insert %s" % (item))
+        self.request("playlist insert %s" % item)
 
     def playlist_delete(self, item):
         """Delete Item From Playlist By Name"""
         item = self.__quote(item)
-        self.request("playlist deleteitem %s" % (item))
+        self.request("playlist deleteitem %s" % item)
 
     def playlist_clear(self):
         """Clear the entire playlist. Will stop the player."""
@@ -325,7 +325,7 @@ class Player(object):
 
     def playlist_erase(self, index):
         """Erase Item From Playlist"""
-        self.request("playlist delete %i" % (index))
+        self.request("playlist delete %i" % index)
 
     def playlist_loadalbum(self, genre=None, artist=None, album=None):
         """Add an album to the Playlist"""
@@ -431,7 +431,7 @@ class Player(object):
         """Play/Pause Toggle"""
         self.request("pause")
 
-    def __next__(self):
+    def next(self):
         """Next Track"""
         self.request("playlist jump +1")
 
@@ -447,7 +447,7 @@ class Player(object):
                 volume = 0
             if volume > 100:
                 volume = 100
-            self.request("mixer volume %i" % (volume))
+            self.request("mixer volume %i" % volume)
         except TypeError:
             pass
 
@@ -459,20 +459,20 @@ class Player(object):
                 bass = -100
             if bass > 100:
                 bass = 100
-            self.request("mixer bass %i" % (bass))
+            self.request("mixer bass %i" % bass)
         except TypeError:
             pass
 
     def bass_up(self, amount=5):
         """Increase Player Bass"""
-        self.request("mixer bass +%i" % (amount))
+        self.request("mixer bass +%i" % amount)
         self.get_bass()
 
     def bass_down(self, amount=5):
         """Decrease Player Bass"""
         try:
             amount = int(amount)
-            self.request("mixer bass -%i" % (amount))
+            self.request("mixer bass -%i" % amount)
             self.get_bass()
         except TypeError:
             pass
@@ -485,7 +485,7 @@ class Player(object):
                 treble = -100
             if treble > 100:
                 treble = 100
-            self.request("mixer treble %i" % (treble))
+            self.request("mixer treble %i" % treble)
         except TypeError:
             pass
 
@@ -493,7 +493,7 @@ class Player(object):
         """Increase Player Treble"""
         try:
             amount = int(amount)
-            self.request("mixer treble +%i" % (amount))
+            self.request("mixer treble +%i" % amount)
             self.get_treble()
         except TypeError:
             pass
@@ -502,7 +502,7 @@ class Player(object):
         """Decrease Player Treble"""
         try:
             amount = int(amount)
-            self.request("mixer treble -%i" % (amount))
+            self.request("mixer treble -%i" % amount)
             self.get_treble()
         except TypeError:
             pass
@@ -515,7 +515,7 @@ class Player(object):
                 pitch = 80
             if pitch > 120:
                 pitch = 120
-            self.request("mixer pitch %i" % (pitch))
+            self.request("mixer pitch %i" % pitch)
         except TypeError:
             pass
 
@@ -523,7 +523,7 @@ class Player(object):
         """Increase Player Pitch"""
         try:
             amount = int(amount)
-            self.request("mixer pitch +%i" % (amount))
+            self.request("mixer pitch +%i" % amount)
             self.get_pitch()
         except TypeError:
             pass
@@ -532,7 +532,7 @@ class Player(object):
         """Decrease Player Pitch"""
         try:
             amount = int(amount)
-            self.request("mixer pitch -%i" % (amount))
+            self.request("mixer pitch -%i" % amount)
             self.get_pitch()
         except TypeError:
             pass
@@ -545,7 +545,7 @@ class Player(object):
                 rate = 4
             if rate > 4:
                 rate = 4
-            self.request("mixer rate %i" % (rate))
+            self.request("mixer rate %i" % rate)
         except TypeError:
             pass
 
@@ -553,7 +553,7 @@ class Player(object):
         """Increase Player Rate"""
         try:
             amount = int(amount)
-            self.request("mixer rate +%i" % (amount))
+            self.request("mixer rate +%i" % amount)
             self.get_rate()
         except TypeError:
             pass
@@ -562,7 +562,7 @@ class Player(object):
         """Decrease Player Rate"""
         try:
             amount = int(amount)
-            self.request("mixer rate -%i" % (amount))
+            self.request("mixer rate -%i" % amount)
             self.get_rate()
         except TypeError:
             pass
@@ -571,7 +571,7 @@ class Player(object):
         """Increase Player Volume"""
         try:
             amount = int(amount)
-            self.request("mixer volume +%i" % (amount))
+            self.request("mixer volume +%i" % amount)
             self.get_volume()
         except TypeError:
             pass
@@ -580,7 +580,7 @@ class Player(object):
         """Decrease Player Volume"""
         try:
             amount = int(amount)
-            self.request("mixer volume -%i" % (amount))
+            self.request("mixer volume -%i" % amount)
             self.get_volume()
         except TypeError:
             pass
@@ -597,7 +597,7 @@ class Player(object):
         """Seek Player"""
         try:
             seconds = int(seconds)
-            self.request("time %s" % (seconds))
+            self.request("time %s" % seconds)
         except TypeError:
             pass
 
@@ -605,7 +605,7 @@ class Player(object):
         """Seek Player Forward"""
         try:
             seconds = int(seconds)
-            self.request("time +%s" % (seconds))
+            self.request("time +%s" % seconds)
         except TypeError:
             pass
 
@@ -613,17 +613,17 @@ class Player(object):
         """Seek Player Backwards"""
         try:
             seconds = int(seconds)
-            self.request("time -%s" % (seconds))
+            self.request("time -%s" % seconds)
         except TypeError:
             pass
 
     def ir_button(self, button):
         """Simulate IR Button Press"""
-        self.request("button %s" % (button))
+        self.request("button %s" % button)
 
-    def randomplay(self, type='tracks'):
+    def randomplay(self, playtype='tracks'):
         """play random mix"""
-        self.request("randomplay %s" % (type))
+        self.request("randomplay %s" % playtype)
 
     def sync_to(self, other_player_ref):
         """Sync to another player with a given Ref"""

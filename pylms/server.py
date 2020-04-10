@@ -20,12 +20,14 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 """
 
 import telnetlib
-import urllib.request, urllib.parse, urllib.error
+import urllib.error
+import urllib.parse
+import urllib.request
+
 from pylms.player import Player
 
 
 class Server(object):
-
     """
     Server
     """
@@ -87,6 +89,7 @@ class Server(object):
         response = self.telnet.read_until(self.__encode("\n"))[:-1]
         response = self.__decode(response)
 
+        command_string_quoted = ""
         if not preserve_encoding:
             response = self.__unquote(response)
         else:
@@ -98,14 +101,14 @@ class Server(object):
         if start in ["songinfo", "trackstat", "albums", "songs", "artists",
                      "rescan", "rescanprogress"]:
             if not preserve_encoding:
-                result = response[len(command_string)+1:]
+                result = response[len(command_string) + 1:]
             else:
-                result = response[len(command_string_quoted)+1:]
+                result = response[len(command_string_quoted) + 1:]
         else:
             if not preserve_encoding:
-                result = response[len(command_string)-1:]
+                result = response[len(command_string) - 1:]
             else:
-                result = response[len(command_string_quoted)-1:]
+                result = response[len(command_string_quoted) - 1:]
         return result
 
     def request_with_results(self, command_string, preserve_encoding=False):
@@ -113,46 +116,46 @@ class Server(object):
         Request with results
         Return tuple (count, results, error_occurred)
         """
-        quotedColon = self.__quote(':')
+        quoted_colon = self.__quote(':')
         try:
-            #init
-            #request command string
-            resultStr = ' '+self.request(command_string, True)
-            #get number of results
+            # init
+            # request command string
+            result_str = ' ' + self.request(command_string, True)
+            # get number of results
             count = 0
-            if resultStr.rfind('count%s' % quotedColon) >= 0:
-                count = int(resultStr[resultStr.rfind(
-                    'count%s' % quotedColon):].replace(
-                    'count%s' % quotedColon, ''))
+            if result_str.rfind('count%s' % quoted_colon) >= 0:
+                count = int(result_str[result_str.rfind(
+                    'count%s' % quoted_colon):].replace(
+                    'count%s' % quoted_colon, ''))
             # remove number of results from result string and cut
             # result string by "id:"
-            idIsSep = True
-            if resultStr.find(' id%s' % quotedColon) < 0:
-                idIsSep = False
-            if resultStr.find('count') >= 0:
-                resultStr = resultStr[:resultStr.rfind('count')-1]
-            results = resultStr.split(' id%s' % quotedColon)
+            id_is_sep = True
+            if result_str.find(' id%s' % quoted_colon) < 0:
+                id_is_sep = False
+            if result_str.find('count') >= 0:
+                result_str = result_str[:result_str.rfind('count') - 1]
+            results = result_str.split(' id%s' % quoted_colon)
 
             output = []
             for result in results:
                 result = result.strip()
                 if len(result) > 0:
-                    if idIsSep:
-                        #fix missing 'id:' at beginning
-                        result = 'id%s%s' % (quotedColon, result)
-                    subResults = result.split(' ')
+                    if id_is_sep:
+                        # fix missing 'id:' at beginning
+                        result = 'id%s%s' % (quoted_colon, result)
+                    sub_results = result.split(' ')
                     item = {}
-                    for subResult in subResults:
-                        #save item
-                        key, value = subResult.split(quotedColon, 1)
+                    for subResult in sub_results:
+                        # save item
+                        key, value = subResult.split(quoted_colon, 1)
                         if not preserve_encoding:
                             item[urllib.parse.unquote(key)] = self.__unquote(value)
                         else:
                             item[key] = value
                     output.append(item)
             return count, output, False
-        except Exception as e:
-            #error parsing results (not correct?)
+        except Exception:
+            # error parsing results (not correct?)
             return 0, [], True
 
     def get_players(self, update=True):
@@ -162,7 +165,7 @@ class Server(object):
         self.players = []
         player_count = self.get_player_count()
         for i in range(player_count):
-            player = Player(server=self, index=i-1, update=update)
+            player = Player(server=self, index=i - 1, update=update)
             self.players.append(player)
         return self.players
 
@@ -171,7 +174,7 @@ class Server(object):
         Get Player
         """
         if not isinstance(ref, str):
-             ref = self.__decode(ref)
+            ref = self.__decode(ref)
         ref = ref.lower()
         if ref:
             for player in self.players:
@@ -206,7 +209,7 @@ class Server(object):
                 "songs 0 50 tags:%s search:%s" % ("", term))
         elif mode == 'artists':
             return self.request_with_results(
-                "artists 0 50 search:%s" % (term))
+                "artists 0 50 search:%s" % term)
 
     def rescan(self, mode='fast'):
         """
@@ -217,7 +220,7 @@ class Server(object):
         is_scanning = True
         try:
             is_scanning = bool(self.request("rescan ?"))
-        except:
+        except Exception:
             pass
 
         if not is_scanning:
@@ -239,8 +242,8 @@ class Server(object):
     def __encode(self, text):
         return text.encode(self.charset)
 
-    def __decode(self, bytes):
-        return bytes.decode(self.charset)
+    def __decode(self, dbytes):
+        return dbytes.decode(self.charset)
 
     def __quote(self, text):
         import urllib.parse
