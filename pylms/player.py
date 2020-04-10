@@ -634,17 +634,9 @@ class Player(object):
         self.request("sync -")
 
     def __quote(self, text):
-        try:
-            import urllib.parse
-            return urllib.parse.quote(text, encoding=self.charset)
-        except ImportError:
-            import urllib.request, urllib.parse, urllib.error
-            return urllib.parse.quote(text)
+        import urllib.parse
+        return urllib.parse.quote(text, encoding=self.charset)
 
     def __unquote(self, text):
-        try:
-            import urllib.parse
-            return urllib.parse.unquote(text, encoding=self.charset)
-        except ImportError:
-            import urllib.request, urllib.parse, urllib.error
-            return urllib.parse.unquote(text)
+        import urllib.parse
+        return urllib.parse.unquote(text, encoding=self.charset)
